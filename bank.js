@@ -1,19 +1,12 @@
-import { mutate } from "@/lib/db.js";
-import { ok, fail, body, auth } from "@/lib/api.js";
-import { bankFromInput } from "@/lib/bank.js";
+export const BANKS = ["MCB", "SBM Bank", "Absa Bank Mauritius", "AfrAsia Bank", "Bank One", "MauBank", "HSBC Mauritius", "Standard Chartered", "Other"];
 
-export async function POST(req) {
-  const { user, res } = await auth();
-  if (res) return res;
-  const { bank, error } = bankFromInput(await body(req));
-  if (error) return fail(error);
-  mutate((db) => { db.users.find((x) => x.id === user.id).bank = bank; });
-  return ok({ bank });
-}
-
-export async function DELETE() {
-  const { user, res } = await auth();
-  if (res) return res;
-  mutate((db) => { db.users.find((x) => x.id === user.id).bank = null; });
-  return ok({});
+// Only the last 4 digits are ever stored - the full account number never touches the database.
+export function bankFromInput(b) {
+  const bankName = String(b.bankName || "").trim();
+  const holder = String(b.holder || "").trim();
+  const acct = String(b.accountNumber || "").replace(/\s/g, "");
+  if (!BANKS.includes(bankName)) return { error: "Please choose your bank" };
+  if (holder.length < 2) return { error: "Please enter the account holder's name" };
+  if (!/^\d{8,20}$/.test(acct)) return { error: "Account number should be 8-20 digits" };
+  return { bank: { bankName, holder, last4: acct.slice(-4), linkedAt: new Date().toISOString(), verified: true } };
 }
