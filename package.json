@@ -4,7 +4,6 @@
   "private": true,
   "description": "SplitSmart AI - split group expenses with AI, receipt scanning, voice input and a demo wallet",
   "scripts": {
-    "postinstall": "node scripts/copy-ocr-assets.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
