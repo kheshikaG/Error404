@@ -1,4 +1,0 @@
-PORT=3000
-JWT_SECRET=replace_with_a_long_random_secret
-DB_FILE=./splitsmart.db
-NODE_ENV=development
